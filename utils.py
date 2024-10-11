@@ -48,8 +48,19 @@ def cmp_to_key(mycmp):
         __hash__ = None
     return K
 
-
-def _compare_box(box1, box2, key):
+def _compare_box(box1, box2, anchor, key, left_best: bool = True):
+    over1 = y_overlap(box1, anchor, key)
+    over2 = y_overlap(box2, anchor, key)
+    if box1[key][2, 0] < box2[key][0, 0] - 3:
+        return -1
+    elif box2[key][2, 0] < box1[key][0, 0] - 3:
+        return 1
+    else:
+        if max(over1, over2) >= 3 * min(over1, over2):
+            return over2 - over1 if left_best else over1 - over2
+        return box1[key][0, 0] - box2[key][0, 0]
+    
+def compare_box(box1, box2, key):
     # 从上到下，从左到右
     # box1, box2 to: [xmin, ymin, xmax, ymax]
     box1 = [box1[key][0][0], box1[key][0][1], box1[key][2][0], box1[key][2][1]]
@@ -203,7 +214,7 @@ def sortboxes(
     return:
         sorted boxes(array): list of dict or tuple, box with shape [4, 2]
     """
-    _boxes = sorted(dt_boxes, key=cmp_to_key(lambda x, y: _compare_box(x, y, key)))
+    _boxes = sorted(dt_boxes, key=cmp_to_key(lambda x, y: compare_box(x, y, key)))
     return _boxes
 
 
