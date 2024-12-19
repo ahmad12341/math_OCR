@@ -1,7 +1,7 @@
 from typing import Tuple, Union, List, Dict, Any
 import torch
 import numpy as np
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageGrab
 from copy import deepcopy
 from collections import Counter, defaultdict
 import re
@@ -259,7 +259,7 @@ def read_img(
     """
     assert return_type in ('Tensor', 'ndarray', 'Image')
     img = Image.open(path)
-    img = ImageOps.exif_transpose(img).convert('RGB')  # 识别旋转后的图片（pillow不会自动识别）
+    img = ImageOps.exif_transpose(img).convert('RGB')  # Recognize rotated images (Pillow will not automatically recognize them)
     if return_type == 'Image':
         return img
     img = np.array(img)
